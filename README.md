@@ -16,6 +16,11 @@ MongoDB – Database
 Mongoose – MongoDB object modeling
 Nano ID – Unique short ID generation
 Dotenv – Environment variable management
+
+
+
+
+
 📁 Project Structure
 text
 url_shortner/
@@ -132,7 +137,7 @@ User authentication.
 Analytics dashboard.
 Better URL validation.
 QR code generation.
-👨‍💻 Author
+👨‍💻 Author  also this project is made with help of ai and is beginner friendly so give valuable feedback 
 
 Arnav Kulkarni
 
