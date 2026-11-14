@@ -10,4 +10,4 @@ redisClient.on('error', (err) => {
 });
 
 
-ex
+export default redisClient;
