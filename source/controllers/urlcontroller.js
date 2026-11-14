@@ -23,7 +23,7 @@ export async function createShortUrl(req, res) {
 await redisClient.setEx(
                 shortcode,
                 3600,
-                originalUrl
+                ne
             );
         return res.status(201).json(newurl);
 
