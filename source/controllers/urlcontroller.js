@@ -44,6 +44,8 @@ export async function redirectUrl(req, res) {
                 message: "Short URL not found"
             });
         }
+
+        redis
        }
         
 
