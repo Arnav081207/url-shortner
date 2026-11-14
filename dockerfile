@@ -1,9 +1,20 @@
-FROM NODE
+# Base image
+FROM node:22-alpine
 
-RUN npm install -g nodemon
-RUN npm i express
-RUN npm i nanoid
-RUN npm i redis
-RUN npm i mongoose
-RUN nom i dotenv
+# Working directory
+WORKDIR /app
 
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy project files
+COPY . .
+
+# Application port
+EXPOSE 3000
+
+# Start application
+CMD ["npm", "start"]
