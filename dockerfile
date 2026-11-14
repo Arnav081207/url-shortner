@@ -2,4 +2,4 @@ FROM NODE
 
 RUN npm install -g nodemon
 RUN npm i express
-RUN  
+RUN npm i nano 
