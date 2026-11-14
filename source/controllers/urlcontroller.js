@@ -21,7 +21,7 @@ export async function createShortUrl(req, res) {
             shorturl: shortid
         });
 
-        // Store original URL in Redis for 1 hour
+        
         await redisClient.setEx(
             shortid,
             3600,
