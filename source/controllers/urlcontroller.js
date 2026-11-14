@@ -52,7 +52,7 @@ export async function redirectUrl(req, res) {
 
             originalUrl = url.originalurl;
 
-            // Save URL in Redis for 1 hour
+            
             await redisClient.setEx(
                 shortcode,
                 3600,
