@@ -35,11 +35,11 @@ export async function redirectUrl(req, res) {
     try {
         const { shortcode } = req.params;
 
-        // Check Redis cache
+        
         let originalUrl = await redisClient.get(shortcode);
 
         if (!originalUrl) {
-            // Cache miss: fetch from MongoDB
+            
             const url = await urlSchem.findOne({
                 shorturl: shortcode
             });
