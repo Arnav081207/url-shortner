@@ -36,7 +36,9 @@ export async function redirectUrl(req, res) {
 
        const redisUrl = await redisClient.get(shortcode);
 
-       if (!redisUrl)
+       if (!redisUrl){
+        
+       }
         if (!url) {
             return res.status(404).json({
                 message: "Short URL not found"
