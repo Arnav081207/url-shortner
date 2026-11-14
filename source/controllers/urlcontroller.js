@@ -20,7 +20,11 @@ export async function createShortUrl(req, res) {
             shorturl: shortid
         });
         const newurlredis= await redisClient.set(shortid, url);
-
+await redisClient.setEx(
+                shortcode,
+                3600,
+                originalUrl
+            );
         return res.status(201).json(newurl);
 
     } catch (error) {
