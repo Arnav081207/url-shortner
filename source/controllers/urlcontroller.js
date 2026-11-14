@@ -37,13 +37,15 @@ export async function redirectUrl(req, res) {
        const redisUrl = await redisClient.get(shortcode);
 
        if (!redisUrl){
-        
-       }
+        const url = await urlSchem.findOne({ shorturl: shortcode });
+
         if (!url) {
             return res.status(404).json({
                 message: "Short URL not found"
             });
         }
+       }
+        
 
         url.click += 1;
         await url.save();
