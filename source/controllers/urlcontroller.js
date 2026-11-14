@@ -30,29 +30,47 @@ export async function createShortUrl(req, res) {
     }
 }
 
+
 export async function redirectUrl(req, res) {
     try {
         const { shortcode } = req.params;
 
-       const redisUrl = await redisClient.get(shortcode);
+        // Check Redis cache
+        let originalUrl = await redisClient.get(shortcode);
 
-       if (!redisUrl){
-        const url = await urlSchem.findOne({ shorturl: shortcode });
-
-        if (!url) {
-            return res.status(404).json({
-                message: "Short URL not found"
+        if (!originalUrl) {
+            // Cache miss: fetch from MongoDB
+            const url = await urlSchem.findOne({
+                shorturl: shortcode
             });
+
+            if (!url) {
+                return res.status(404).json({
+                    message: "Short URL not found"
+                });
+            }
+
+            originalUrl = url.originalurl;
+
+            // Save URL in Redis for 1 hour
+            await redisClient.setEx(
+                shortcode,
+                3600,
+                originalUrl
+            );
+
+            url.click += 1;
+            await url.save();
+
+        } else {
+            // Cache hit: increment clicks in MongoDB
+            await urlSchem.updateOne(
+                { shorturl: shortcode },
+                { $inc: { click: 1 } }
+            );
         }
 
-        redisClient.set(shortcode, url.originalurl);
-       }
-        
-
-        url.click += 1;
-        await url.save();
-
-        return res.redirect(url.originalurl);
+        return res.redirect(originalUrl);
 
     } catch (error) {
         return res.status(500).json({
