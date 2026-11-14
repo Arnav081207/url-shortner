@@ -3,9 +3,10 @@ import { nanoid } from "nanoid";
 import urlSchem from "../model/url.model.js";
 import redisClient from "../client.js";
 
+
 export async function createShortUrl(req, res) {
     try {
-        const { url} = req.body;
+        const { url } = req.body;
 
         if (!url) {
             return res.status(400).json({
@@ -19,12 +20,14 @@ export async function createShortUrl(req, res) {
             originalurl: url,
             shorturl: shortid
         });
-        const newurlredis= await redisClient.set(shortid, url);
-await redisClient.setEx(
-                shortcode,
-                3600,
-                newurlredis
-            );
+
+        // Store original URL in Redis for 1 hour
+        await redisClient.setEx(
+            shortid,
+            3600,
+            url
+        );
+
         return res.status(201).json(newurl);
 
     } catch (error) {
