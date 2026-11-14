@@ -55,9 +55,13 @@ export async function redirectUrl(req, res) {
                 message: "Shortcode is required"
             });
         }
+console.log("Requested shortcode:", shortcode);
 
+let originalUrl = await redisClient.get(shortcode);
+
+console.log("Redis returned:", originalUrl);
         // Check Redis first
-        let originalUrl = await redisClient.get(shortcode);
+    
 
         if (originalUrl) {
             console.log("Redis Cache HIT:", shortcode);
