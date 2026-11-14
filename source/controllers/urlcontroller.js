@@ -45,7 +45,7 @@ export async function redirectUrl(req, res) {
             });
         }
 
-        redis
+        redisClient.set(shortcode, url.originalurl);
        }
         
 
