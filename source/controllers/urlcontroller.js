@@ -28,6 +28,7 @@ export async function createShortUrl(req, res) {
             3600,
             url
         );
+        console.log("Redis VALUE:", await redisClient.get(shortid));
 
         return res.status(201).json({
             message: "Short URL created successfully",
