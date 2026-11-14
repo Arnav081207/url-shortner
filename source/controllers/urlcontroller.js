@@ -34,10 +34,7 @@ export async function redirectUrl(req, res) {
     try {
         const { shortcode } = req.params;
 
-        const url = await urlSchem.findOne({
-            shorturl: shortcode
-        });
-
+       ao
         if (!url) {
             return res.status(404).json({
                 message: "Short URL not found"
