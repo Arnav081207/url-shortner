@@ -1,6 +1,7 @@
 
 import { nanoid } from "nanoid";
 import urlSchem from "../model/url.model.js";
+import redisClient from "../client.js";
 
 export async function createShortUrl(req, res) {
     try {
