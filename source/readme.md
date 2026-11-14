@@ -1,28 +1,86 @@
 🔗 URL Shortener
 
-A simple and efficient URL Shortener built using Node.js, Express.js, and MongoDB. It converts long URLs into short, shareable links using unique IDs generated with Nano ID.
+A fast and efficient URL Shortener built with Node.js, Express.js, MongoDB, and Redis. It converts long URLs into short, shareable links using Nano ID and uses Redis caching to improve redirect performance.
+
+The application also supports Docker containerization for easier setup and deployment.
 
 🚀 Features
-Create short URLs from long URLs.
-Generate unique short codes using Nano ID.
-Redirect short URLs to their original destinations.
-Track the number of clicks on each short URL.
-Store URL information in MongoDB.
-REST API architecture.
+Short URL Generation: Generate unique short links using Nano ID.
+URL Redirection: Redirect users to their original destinations.
+Click Tracking: Track clicks on shortened URLs.
+MongoDB Integration: Persist URL data.
+Redis Caching: Cache frequently accessed URLs for faster lookups.
+Cache Expiration: Automatically expire cached URLs.
+Docker Support: Containerize the application.
+REST API: Organized API endpoints using Express.js.
+Environment Configuration: Manage settings using dotenv.
 🛠️ Tech Stack
-Node.js – JavaScript runtime
-Express.js – Backend framework
-MongoDB – Database
-Mongoose – MongoDB object modeling
-Nano ID – Unique short ID generation
-Dotenv – Environment variable management
+Technology	Purpose
+Node.js	JavaScript runtime
+Express.js	Backend framework
+MongoDB	Persistent database
+Mongoose	MongoDB object modeling
+Redis	In-memory caching
+Nano ID	Unique short ID generation
+Docker	Application containerization
+Dotenv	Environment configuration
+🏗️ Architecture
+
+The application uses MongoDB for permanent URL storage and Redis as a caching layer.
+
+URL Redirection Flow:
+
+User requests a shortened URL.
+Backend checks Redis for the shortcode.
+Cache HIT: Original URL is retrieved directly from Redis.
+Cache MISS: MongoDB is queried to retrieve the original URL.
+Retrieved URL is cached in Redis.
+Click count is incremented in MongoDB.
+User is redirected to the original destination.
+⚡ Performance Improvement
+
+Redis caching significantly reduced the observed response time during local Postman testing.
+
+Benchmark Results
+Metric	Response Time
+Redis Cache MISS	700 ms
+Redis Cache HIT	234 ms
+Time Saved	466 ms
+Performance Improvement	66.57%
+
+<details>
+<summary>Performance calculation</summary>
+
+700
+−
+234
+700
+×
+100
+=
+66.57
+%
+
+The cached request was approximately 2.99× faster based on these measurements.
+
+</details>
+
+Key Achievement:
+
+Reduced observed API response time by approximately 66.57%.
+Saved approximately 466 ms per request in the initial comparison.
+Avoided repeated MongoDB URL lookups through Redis caching.
+
+Note: These are initial local testing observations, not controlled benchmark results. Actual performance may vary depending on database latency, network conditions, and server load.
+
 📁 Project Structure
 text
 url_shortner/
 │
 ├── source/
 │   ├── config/
-│   │   └── db.js
+│   │   ├── db.js
+│   │   └── config.js
 │   │
 │   ├── controllers/
 │   │   └── urlController.js
@@ -33,11 +91,14 @@ url_shortner/
 │   ├── routes/
 │   │   └── route.js
 │   │
-│   ├── app.js
-│   └── config.js
+│   ├── client.js
+│   └── app.js
 │
 ├── .env
+├── .env.example
 ├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
 ├── package.json
 ├── package-lock.json
 ├── README.md
@@ -58,31 +119,63 @@ npm install
 
 4. Configure environment variables
 
-Create a .env file in the root directory:
+Create a .env file in the project root:
 
 env
 MONGO_URL=mongodb://localhost:27017/arnav-url-shortner
+REDIS_URL=redis://localhost:6379
 PORT=4000
 
 
-Make sure MongoDB is installed and running.
+Configure your MongoDB connection according to your environment.
 
-5. Start the development server
+5. Start Redis
+bash
+docker run -d --name redis-server -p 6379:6379 redis:7-alpine
+
+
+Ensure MongoDB is also running.
+
+6. Start the development server
 bash
 npm run dev
 
 
-Server will run at:
+Server URL:
 
 text
 http://localhost:4000
 
+🐳 Docker Setup
+Build Docker image
+bash
+docker build -t url-shortener .
+
+Start with Docker Compose
+bash
+docker compose up --build -d
+
+Check running containers
+bash
+docker compose ps
+
+View logs
+bash
+docker compose logs -f
+
+Stop containers
+bash
+docker compose down
+
+
+Ensure your Docker Compose configuration supplies the required MongoDB and Redis connection environment variables.
+
 📡 API Endpoints
 1. Create Short URL
 
-Endpoint: POST /arnav/short
+Method: POST
 
-Creates a short URL from the provided original URL.
+Endpoint: /arnav/short
 
 Request Body:
 
@@ -98,44 +191,67 @@ json
 {
   "_id": "your_document_id",
   "originalurl": "https://www.google.com",
-  "shorturl": "Ab12",
+  "shorturl": "Ab12xyz",
   "click": 0
 }
 
 2. Redirect to Original URL
 
-Endpoint: GET /arnav/:shortcode
+Method: GET
 
-Redirects the user to the original URL associated with the short code.
+Endpoint: /arnav/:shortcode
 
 Example:
 
 text
-http://localhost:4000/arnav/Ab12
+http://localhost:4000/arnav/Ab12xyz
 
 
-If the short code exists, the user is redirected to the original URL and the click counter increases by one.
+Responses:
 
-If the short code does not exist, the API returns a 404 Not Found response.
-
+302 Found – Redirects to the original URL.
+404 Not Found – Shortcode does not exist.
+500 Internal Server Error – Unexpected server error.
 🧪 Testing
 
-You can test the API using Postman.
+The application can be tested using Postman.
 
 Method	Endpoint	Purpose
 POST	/arnav/short	Create short URL
 GET	/arnav/:shortcode	Redirect to original URL
-📈 Future Improvements
+
+Verify Redis caching:
+
+bash
+docker exec -it redis-server redis-cli
+
+
+Check cached URL:
+
+redis
+GET your_shortcode
+
+
+Check expiration:
+
+redis
+TTL your_shortcode
+
+🔮 Future Improvements
 Custom short URL aliases.
-URL expiration functionality.
-User authentication.
-Analytics dashboard.
-Better URL validation.
+URL expiration and automatic cleanup.
+User authentication and authorization.
+Advanced click analytics.
+Rate limiting using Redis.
 QR code generation.
+URL validation and security enhancements.
+Production deployment and monitoring.
 👨‍💻 Author
 
 Arnav Kulkarni
 
-Built as a backend development project to practice Node.js, Express.js, MongoDB, and REST API development.
+Backend Development Project
+
+Built to explore backend development, REST APIs, MongoDB, Redis caching, performance optimization, and Docker containerization.
 
 ⭐ If you find this project useful, consider giving it a star!
