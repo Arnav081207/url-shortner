@@ -8,7 +8,7 @@ if (!process.env.MONGO_URL) {
 
 const config = {
     mongo_url: process.env.MONGO_URL,
-    port: process.env.PORT 
+    port: process.env.PORT || 4000
 };
 
 export default config;
