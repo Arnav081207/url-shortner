@@ -1,7 +1,7 @@
 import express from 'express';
 import router from './routes/route.js';
 import { rateLimit } from 'express-rate-limit'
-
+const app = express();
 const limiter = rateLimit({
 	windowMs: 15 * 60 * 1000, // 15 minutes
 	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes).
@@ -13,7 +13,7 @@ const limiter = rateLimit({
 
 // Apply the rate limiting middleware to all requests.
 app.use(limiter)
-const app = express();
+
 
 app.use(express.json());
 
