@@ -11,7 +11,7 @@ const limiter = rateLimit({
 	// store: ... , // Redis, Memcached, etc. See below.
 })
 
-// Apply the rate limiting middleware to all requests.
+
 app.use(limiter)
 
 
